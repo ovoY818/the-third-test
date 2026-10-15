@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Exported from Figma">
+  <title>Exported Figma Design</title>
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="desktop-5-78">
+<img src="images/node-79.png" class="node-79" alt="pexels-tania-3802621-34466675-2" />
+<div class="rectangle-7-80"></div>
+<p class="text-81"><span class="text-white">Listen with me
+</span></p>
+<img src="images/exclude-82.svg" class="exclude-82" alt="exclude" data-audio="千本樱.m4a" />
+<img src="images/exclude-83.svg" class="exclude-83" alt="exclude" data-audio="未闻花名.m4a" />
+<img src="images/exclude-84.svg" class="exclude-84" alt="exclude" data-audio="四月前奏.m4a" />
+<img src="images/exclude-85.svg" class="exclude-85" alt="exclude" data-audio="梦回红尘1.0.m4a" />
+<img src="images/exclude-86.svg" class="exclude-86" alt="exclude" data-audio="Yuri on ice!.m4a" />
+<img src="images/exclude-87.svg" class="exclude-87" alt="exclude" data-audio="神的随波逐流.m4a" />
+<a href="desktop-2.html" class="prototype-link">
+<div class="component-3">
+<div class="ic-left1-1-89">
+<img src="images/vector-90.svg" class="vector-90" alt="vector" />
+</div>
+<p class="text-91"><span class="text-white">return
+</span></p>
+</div>
+</a>
+<a href="desktop-4.html" class="prototype-link">
+<div class="component-2">
+<img src="images/vector-93.svg" class="vector-93" alt="vector" />
+<p class="text-94"><span class="text-white">next
+</span></p>
+</div>
+</a>
+<a href="desktop-2.html" class="prototype-link">
+<div class="component-1">
+<div class="ic-house-1-96">
+<img src="images/vector-97.svg" class="vector-97" alt="vector" />
+<img src="images/vector-98.svg" class="vector-98" alt="vector" />
+<img src="images/vector-99.svg" class="vector-99" alt="vector" />
+<img src="images/vector-100.svg" class="vector-100" alt="vector" />
+<img src="images/vector-101.svg" class="vector-101" alt="vector" />
+<img src="images/vector-102.svg" class="vector-102" alt="vector" />
+<img src="images/vector-103.svg" class="vector-103" alt="vector" />
+<img src="images/vector-104.svg" class="vector-104" alt="vector" />
+<img src="images/vector-105.svg" class="vector-105" alt="vector" />
+</div>
+<p class="text-106"><span class="text-white">home
+</span></p>
+</div>
+</a>
+<p class="text-107"><span class="text-white">WELCOME!
+欢迎与我一同感受音乐世界
+</span></p>
+<p class="text-108"><span class="text-white">这里存放了一些朋友弹奏的歌曲。它们是我难过时的心灵慰藉ovo
+如果有空的话，留下脚步听一听吧！</span></p>
+</div>
+
+<script>
+  // 获取所有包含音频的图标
+  const icons = document.querySelectorAll('.exclude-82, .exclude-83, .exclude-84, .exclude-85, .exclude-86, .exclude-87');
+
+  // 当前正在播放的音频元素
+  let currentAudio = null;
+
+  // 给每个图标绑定点击事件
+  icons.forEach(icon => {
+    icon.addEventListener('click', function () {
+      // 获取当前图标对应的音频文件名
+      const audioSrc = this.dataset.audio;
+
+      // 查询页面中是否已经存在对应的 <audio> 元素
+      let audio = document.querySelector(`audio[data-src="${audioSrc}"]`);
+
+      // 如果该音频元素还不存在，则创建一个
+      if (!audio) {
+        audio = document.createElement('audio');
+        audio.setAttribute('data-src', audioSrc);
+        audio.preload = 'metadata';
+
+        // 创建一个隐藏的 Audio 对象，用于获取文件信息
+        const hiddenAudio = new Audio();
+        hiddenAudio.src = audioSrc;
+        hiddenAudio.preload = 'metadata';
+
+        // 当音频元数据加载完成后，将其加入页面
+        hiddenAudio.addEventListener('loadedmetadata', function () {
+          if (!document.querySelector(`audio[data-src="${audioSrc}"]`)) {
+            audio.src = hiddenAudio.src;
+            document.body.appendChild(audio);
+          }
+        });
+
+        // 确保音频文件能正确加载
+        hiddenAudio.addEventListener('error', function () {
+          console.error('无法加载音频文件:', audioSrc);
+        });
+      }
+
+      // 如果当前点击的是当前正在播放的图标，则切换播放/暂停
+      if (currentAudio === audio) {
+        if (audio.paused) {
+          audio.play().catch(error => {
+            console.error('播放失败:', error);
+          });
+        } else {
+          audio.pause();
+        }
+      } else {
+        // 切换到其他图标时，先暂停上一个正在播放的音频
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio = null;
+        }
+
+        // 播放当前图标对应的音频
+        audio.play().then(() => {
+          currentAudio = audio;
+        }).catch(error => {
+          console.error('播放失败:', error);
+        });
+      }
+    });
+  });
+</script>
+</body>
+</html>
