@@ -113,9 +113,9 @@ a.prototype-link {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 0px;
+  padding:20px;
   width: 100%;
   min-height: 100vh;
   margin: 0 auto;
@@ -123,6 +123,7 @@ a.prototype-link {
   flex-grow: 0;
   flex-shrink: 1;
   background-color: rgba(255, 255, 255, 1);
+  overflow:hidden;
 }
 
 .node-7 {
