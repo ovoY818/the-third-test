@@ -97,6 +97,23 @@ a.prototype-link {
 }
 
 .desktop-1-1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  max-width: 1440px;
+  flex-grow: 0;
+  flex-shrink: 1;
+  background-color: rgba(255, 255, 255, 1);
+  overflow: hidden;
+}
+
+/* 下面这两个是媒体查询，必须写在 .desktop-1-1 的外面 */
 @media (max-width: 1440px) {
   .desktop-1-1 {
     padding-left: 24px;
@@ -109,21 +126,6 @@ a.prototype-link {
     padding-left: 16px;
     padding-right: 16px;
   }
-}
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 10px;
-  padding:20px;
-  width: 100%;
-  min-height: 100vh;
-  margin: 0 auto;
-  max-width: 1440px;
-  flex-grow: 0;
-  flex-shrink: 1;
-  background-color: rgba(255, 255, 255, 1);
-  overflow:hidden;
 }
 
 .node-7 {
