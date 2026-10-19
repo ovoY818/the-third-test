@@ -1878,3 +1878,58 @@ position: relative !important;
 .desktop-7-136 img.rectangle-10-159 { left: 390px !important;  top: 240px !important; }
 .desktop-7-136 img.rectangle-11-160 { left: 740px !important;  top: 240px !important; }
 .desktop-7-136 img.rectangle-12-161 { left: 1090px !important; top: 240px !important; }
+
+/* ===== E. desktop-1 首页大按钮修复 =====
+   病因：全局导航规则把 726x182 的胶囊按钮压成 150x56，内部图形又被 max-width:30px 压成 30x8 小条。
+   修复：恢复完整尺寸，保留在原有位置（画板左下），强行提到背景图之上，全区域可点。 */
+/* 整个按钮组件水平居中、置于下方；内部文字/框结构与跳转不变 */
+/* 注意：选择器加 :nth-of-type(1) 以压过导航规则的 left:40px（权重 0,3,1） */
+.desktop-1-1 a.prototype-link:nth-of-type(1) {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 20% !important;
+  top: auto !important;
+  width: 726px !important;
+  height: 182px !important;
+  transform: translateX(-50%) !important;
+  z-index: 99 !important;
+  cursor: pointer !important;
+  display: block !important;
+}
+.desktop-1-1 a.prototype-link img.rectangle-1-3 {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+/* 按钮文字（独立的 text-4）包一层链接后可点击，样式保持不变 */
+/* 文字“Click to know more！”居中在黑框（胶囊）正中间，白色、高层级 */
+.desktop-1-1 a.prototype-link p.text-4 {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  width: max-content !important;
+  font-size: 64px !important;   /* 恢复 Figma 原始字号，压过导航 18px 规则 */
+  line-height: 1.2 !important;
+  color: #ffffff !important;
+  z-index: 10 !important;
+  white-space: nowrap !important;
+  text-align: center !important;
+  cursor: pointer !important;
+}
+/* WELCOME TO MY WEBSITE：两行居中，位于背景图偏上方（左右位置相对画板居中） */
+.desktop-1-1 p.text-5 {
+  position: relative !important;
+  top: 15% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 800px !important;    /* 实测第一行 746px；600px 会多折一行，故用 800px */
+  max-width: 80% !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
