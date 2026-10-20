@@ -2527,3 +2527,21 @@ body {
   width: 66% !important;
   height: 660px !important;
 }
+
+/* ===== J. desktop-1 按钮文字层级：文字提到最高层，黑框压到底层（用户指定，只改层级不动坐标） =====
+   结构：a.prototype-link > img.rectangle-1-3（黑底圆角框）+ p.text-4 > span（文字）。
+   实测背景：p.text-4 因唯一子元素 span 被设为 absolute 而塌缩成 0x0，
+   文字实际由 span 渲染；黑框 img 是 <a> 内唯一的 img（:first-of-type），
+   不匹配全局 [class^="desktop-"] img:not(:first-of-type) 规则，z-index 为 auto。
+   注意：.text-4 的 99999 会被 .desktop-1-1 a.prototype-link p.text-4（权重 0,3,1）的
+   z-index:10 压过，故文字层级实际由 .text-4 span（权重 0,1,1，同段竞争中后置获胜）承载；
+   span 脱离文档流锚在按钮中心，位置不变。 */
+.text-4,
+.text-4 span {
+z-index: 99999 !important; /* 强制提到宇宙最高层 */
+position: absolute !important; /* 保持绝对定位 */
+}
+/* 如果那个框本身有单独的类名（比如 .rectangle-1-3），确保它不要盖住文字 */
+.rectangle-1-3 {
+z-index: 10 !important; /* 把它压在文字下面 */
+}
