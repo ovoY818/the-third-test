@@ -8,6 +8,20 @@
   <title>Exported Figma Design</title>
   
   <link rel="stylesheet" href="styles.css">
+  <script>
+  /* 全屏自适应缩放：画板锁定 1440x1024 设计稿，所有 left/top 坐标不变，
+     整体等比缩放铺满屏幕。只改最外层画板的 transform，不碰任何元素坐标。 */
+  (function () {
+    var DESIGN_W = 1440, DESIGN_H = 1024;
+    function fitStage() {
+      var s = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+      document.documentElement.style.setProperty('--fit-scale', s);
+    }
+    window.addEventListener('resize', fitStage);
+    window.addEventListener('orientationchange', fitStage);
+    fitStage();
+  })();
+  </script>
 </head>
 <body>
 <div class="desktop-5-82">

@@ -2272,3 +2272,39 @@ right: 5% !important;   /* 限制在右侧 */
 .desktop-3-16 p.text-35 { position: absolute !important; left: 1px !important;  top: 853px !important; }
 .desktop-3-16 p.text-36 { position: absolute !important; left: 1px !important;  top: 909px !important; }
 .desktop-3-16 .ic-right-2-37 { position: absolute !important; left: 1px !important; top: 965px !important; }
+
+/* ===== G. 全屏自适应缩放（transform: scale 方案）=====
+   目标：画板永远是 1440x1024 设计稿，内部所有 left/top 坐标一律不动；
+        整块画板像视频一样等比缩放，始终居中，尽量铺满屏幕。
+   实现：画板由"流式 + margin 居中"改为"绝对定位到视口中心 + transform 以中心缩放"。
+        缩放系数 --fit-scale 由每页 <head> 的内联脚本实时计算并写入：
+          min(窗口宽/1440, 窗口高/1024)
+        等价于用户 media query 的逻辑（屏幕更宽 -> 按高度缩放；更窄 -> 按宽度缩放），
+        且窗口缩放 / 旋屏时持续刷新，无需刷新页面。
+   说明：等比缩放时，若屏幕宽高比 ≠ 1440/1024，某一侧会露出 body 的 #1a1a1a 底色
+        （Letterbox 黑边），这是等比缩放的数学必然；若要彻底无黑边必须非等比拉伸，
+        画面会变形，与"等比"要求冲突，故不采用。 */
+html,
+body {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: #1a1a1a !important;
+  overflow: hidden !important;   /* 隐藏滚动条 */
+}
+[class^="desktop-"] {
+  position: absolute !important; /* 锚定到视口；内部元素的 left/top 全部照旧 */
+  left: 50% !important;
+  top: 50% !important;
+  width: 1440px !important;      /* 死死锁定设计稿宽度 */
+  height: 1024px !important;     /* 死死锁定设计稿高度 */
+  min-width: 1440px !important;
+  min-height: 0 !important;      /* 关键：导出样式带 min-height:100vh，高屏下会把画板撑高，必须清零 */
+  max-height: 1024px !important; /* 双保险：任何情况都不许超过设计稿高度 */
+  margin: 0 !important;
+  transform-origin: center center !important; /* 以中心点缩放 */
+  transform: translate(-50%, -50%) scale(var(--fit-scale, 1)) !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  background-color: #ffffff !important;
+}
