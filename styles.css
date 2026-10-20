@@ -1933,3 +1933,288 @@ position: relative !important;
   text-align: center !important;
   line-height: 1.2 !important;
 }
+
+/* ===== desktop-2：个人信息竖排 + 四个导航文字绝对定位 ===== */
+/* 1. 个人信息容器：竖排、水平居中、间距 10px（位于头像下方，位置随流式布局不变） */
+.desktop-2-6 .info-block {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+/* 2. 四个导航文字：保留 <a> 跳转标签，恢复 64px 原始字号（压过全局导航 18px 规则） */
+.desktop-2-6 a.prototype-link p {
+  font-size: 64px !important;
+  margin: 0 !important;
+}
+.desktop-2-6 a.prototype-link > p {
+  display: block !important;
+}
+/* 说明：此导出中这些文字原本没有 left/top 坐标，以下为按 Figma 样式安排的绝对定位；
+    右侧竖排菜单，与左侧“头像+个人信息”平衡。如需按原稿精确坐标，告诉我数值即可改。 */
+.desktop-2-6 a.prototype-link:nth-of-type(1) {  /* About me */
+  position: absolute !important;
+  left: 975px !important;
+  top: 150px !important;
+  bottom: auto !important;
+  width: 300px !important;
+  height: 80px !important;
+}
+.desktop-2-6 a.prototype-link:nth-of-type(2) {  /* Listen with me */
+  position: absolute !important;
+  left: 975px !important;
+  top: 330px !important;
+  bottom: auto !important;
+  width: 440px !important;
+  height: 80px !important;
+}
+.desktop-2-6 a.prototype-link:nth-of-type(3) {  /* My text */
+  position: absolute !important;
+  left: 975px !important;
+  top: 510px !important;
+  bottom: auto !important;
+  width: 300px !important;
+  height: 80px !important;
+}
+.desktop-2-6 a.prototype-link:nth-of-type(4) {  /* Some photos */
+  position: absolute !important;
+  left: 975px !important;
+  top: 690px !important;
+  bottom: auto !important;
+  width: 400px !important;
+  height: 80px !important;
+}
+
+/* ===== 清除文字外黑框 + 恢复白字黑描边（Figma 原稿样式）===== */
+/* 1. 清空所有背景色（文字元素原本就是透明背景，此规则为双保险；
+      画板与设计面板的背景由 class 规则设置，优先级更高，不受影响） */
+a, p, span, div {
+  background-color: transparent !important;
+  background: none !important;
+}
+/* 关键补充：真正的“黑框”是 Figma 导出给 .text-* 文字类加的 3px 黑色边框，
+   不是背景色——必须一并清除。作用域只含 a/p/span（文字元素），
+   不碰 div/img，因此 .vector-* 图标的 1px 边框和头像的 5px 边框不受影响 */
+a, p, span {
+  border: none !important;
+}
+/* 2. 白字黑描边只给链接内的导航标题（About me 等）；
+      普通文字（如 Literata 字体的个人信息）保持干净白字，不加描边 */
+a p, a span {
+  color: #ffffff !important;
+  -webkit-text-stroke: 1.5px #000000 !important;
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8) !important;
+}
+/* 个人信息（霜秋怀煦 / ovoY / 邮箱）：纯白、无描边、无阴影 */
+.text-9, .text-10, .text-11 {
+  color: #ffffff !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+
+/* ===== F. 底部导航三按钮（return/next/home）修复 =====
+   病史：① 上轮全局描边规则 a p, a span 命中导航文字，出现 1.5px 黑描边+投影重影；
+   ② return 箭头（ic-left1-1-* 内 img）与 next 箭头（组件直接 img）被全局 inline-block+max-30px
+      规则挤压，位置偏移、尺寸过大；③ home 的 9 个图层碎片（ic-house-1-* 内）散架（vector-47 掉到 y=970）。
+   本版按用户要求改用 flex 居中对齐（组件内部），<a> 跳转标签与其 top/left 绝对定位一律不动。
+   注意：desktop-4 / desktop-6 在 Figma 导出时原本就没有 next 按钮（d4=return+home，d6=return+home），
+   并非文字丢失；desktop-2 是四个大字菜单、desktop-1 是首页大按钮，均不受本段影响。 */
+/* 1. 组件容器：flex 居中 + 明确宽高 + overflow visible（图标与文字对齐排好） */
+[class^="desktop-"] a.prototype-link > div {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  width: 90px !important;
+  height: 40px !important;
+  overflow: visible !important;
+}
+/* 2a. return 的箭头包裹容器（ic-left1-1-*）：15x15 固定，不缩放不换行 */
+[class^="desktop-"] a.prototype-link [class^="ic-left"] {
+  position: relative !important;
+  display: block !important;
+  width: 15px !important;
+  height: 15px !important;
+  flex: 0 0 auto !important;
+}
+/* 2b. 三角形箭头 img（next 是组件直接 img、return 在 ic-left1-1-* 内）：15x15 恢复原状 */
+[class^="desktop-"] a.prototype-link > div > img,
+[class^="desktop-"] a.prototype-link [class^="ic-left"] img {
+  display: block !important;
+  width: 15px !important;
+  height: 15px !important;
+  max-width: 15px !important;
+  max-height: 15px !important;
+  object-fit: contain !important;
+  flex: 0 0 auto !important;
+}
+/* 3. home 图标：15x15 容器，9 个图层碎片全部叠回同一原点，还原房子造型 */
+[class^="desktop-"] a.prototype-link [class^="ic-house"] {
+  position: relative !important;
+  display: block !important;
+  width: 15px !important;
+  height: 15px !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+}
+[class^="desktop-"] a.prototype-link [class^="ic-house"] img {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 15px !important;
+  max-height: 15px !important;
+}
+/* 4. 导航文字：强制可见（防丢）、纯白 14px、去描边去阴影、提到最高层级 */
+[class^="desktop-"] a.prototype-link > div > p {
+  position: relative !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #ffffff !important;
+  z-index: 999 !important;
+  margin: 0 !important;
+  font-size: 14px !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+}
+
+/* ==========================================
+1. 修复 Yunnan 文字模糊问题 (desktop-6)
+========================================== */
+.text-135 {
+-webkit-text-stroke: 0px !important; /* 去掉黑边 */
+text-shadow: none !important;        /* 去掉重影 */
+color: #ffffff !important;           /* 纯白色 */
+display: block !important;
+visibility: visible !important;
+opacity: 1 !important;
+}
+/* ==========================================
+2. 修复底部导航文字 (return, next, home)
+========================================== */
+/* 先给文字去黑边、恢复白色 */
+.text-25, .text-42, .text-54 {
+-webkit-text-stroke: 0px !important;
+text-shadow: none !important;
+color: #ffffff !important;
+display: block !important;
+visibility: visible !important;
+font-size: 14px !important; /* 确保字够大 */
+z-index: 999 !important;    /* 浮在最上面 */
+}
+/* 3. 修复图标错乱，强制让图标和文字排在一起 */
+/* 因为包裹它们的外层是 .component-3-22 等，我们把它们变成弹性盒子 */
+.component-3-22,
+.component-2-40,
+.component-1-43 {
+display: flex !important;
+flex-direction: row !important;  /* 横向排列 */
+align-items: center !important;  /* 垂直居中对齐 */
+justify-content: center !important;
+gap: 5px !important;             /* 图标和文字的间距 */
+position: absolute !important;   /* 保持原有的绝对定位 */
+/* 如果你发现位置偏了，千万不要改这里，去改外层的 .a 标签 */
+}
+/* 防止里面的小图标被拉伸变形 */
+.component-3-22 img,
+.component-2-40 img,
+.component-1-43 img {
+width: auto !important;
+height: auto !important;
+max-width: 20px !important; /* 控制小箭头的最大尺寸 */
+max-height: 20px !important;
+}
+p, span {
+    -webkit-text-stroke: 0px !important;
+    text-shadow: none !important;
+}
+/* ==========================================
+   终极拯救 Yunnan 及页面排版 (desktop-6)
+   ========================================== */
+
+/* 1. 撤销 body 强制 flex 居中，恢复原本的绝对定位 */
+html, body {
+    display: block !important; /* 把 flex 干掉！ */
+    overflow-x: hidden !important;
+}
+
+/* 2. 释放包裹文字的容器，让它别缩成一团 */
+.text-135 {
+    width: auto !important;
+    height: auto !important;
+    white-space: nowrap !important; /* 保证文字在一行，不换行 */
+    z-index: 9999 !important;
+}
+
+/* 3. 强行去掉文字的黑边、阴影，强制变纯白 */
+.text-135, 
+.text-135 * { /* 选中它里面所有的子元素 */
+    color: #ffffff !important; 
+    -webkit-text-stroke: 0px !important; 
+    text-shadow: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    filter: none !important; /* 防止 AI 加了模糊滤镜 */
+}
+/* ==========================================
+   终极终结版：完美锁定位置 + 字体防崩兜底
+   ========================================== */
+
+/* 强行锁定 text-4 的位置和样式 */
+.text-4, 
+.text-4 span {
+    position: absolute !important;
+    left: 50% !important;
+    top: 65% !important; /* 你可以微调这个数字（比如 60% 或 70%） */
+    transform: translate(-50%, -50%) !important; 
+    
+    color: #ffffff !important; 
+    font-size: 24px !important; 
+    -webkit-text-stroke: 0px !important; 
+    text-shadow: none !important;
+    z-index: 9999 !important;
+    white-space: nowrap !important; 
+    
+    /* 【核心救命代码】如果 GitHub 找不到 Irish Grover，就用电脑自带的草书/复古字体替代 */
+    font-family: 'Irish Grover', 'Comic Sans MS', cursive, sans-serif !important;
+}
+
+/* 确保按钮的点击区域不会因为文字飞了而变形 */
+.prototype-link {
+    position: relative !important;
+}
+/* ==========================================
+   终极终结版：完美锁定位置 + 字体放大加粗
+   ========================================== */
+
+.text-4, 
+.text-4 span {
+    position: absolute !important;
+    left: 50% !important;
+    top: 65% !important; 
+    transform: translate(-50%, -50%) !important; 
+    
+    color: #ffffff !important; 
+    font-size: 32px !important; /* 👈 把 24px 改成 32px 或更大，比如 36px */
+    font-weight: bold !important; /* 👈 新增：让字体加粗，更有存在感 */
+    letter-spacing: 2px !important; /* 👈 新增：字间距拉开一点点，更高级 */
+    
+    -webkit-text-stroke: 0px !important; 
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8) !important; /* 加一点点阴影，防止白字在亮色背景上看不清 */
+    z-index: 9999 !important;
+    white-space: nowrap !important; 
+    
+    /* 字体兜底 */
+    font-family: 'Irish Grover', 'Comic Sans MS', cursive, sans-serif !important;
+}
+
+.prototype-link {
+    position: relative !important;
+}
