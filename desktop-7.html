@@ -5,9 +5,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Exported from Figma">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Exported Figma Design</title>
-  
-  <link rel="stylesheet" href="styles.css">
+
+  <link rel="stylesheet" href="styles.css?v=20261020d">
+  <script>
+  /* 全屏自适应缩放：画板锁定 1440x1024 设计稿，所有 left/top 坐标不变，
+     整体等比缩放铺满屏幕。只改最外层画板的 transform，不碰任何元素坐标。 */
+  (function () {
+    var DESIGN_W = 1440, DESIGN_H = 1024;
+    function fitStage() {
+      var s = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+      document.documentElement.style.setProperty('--fit-scale', s);
+    }
+    window.addEventListener('resize', fitStage);
+    window.addEventListener('orientationchange', fitStage);
+    fitStage();
+  })();
+  </script>
 </head>
 <body>
 <div class="desktop-7-136">
@@ -19,7 +36,7 @@
         <p style="margin: 0; color: #ffffff !important; font-size: 14px !important; font-family: sans-serif; -webkit-text-stroke: 0px !important; text-shadow: none !important;">return</p>
     </div>
 </a>
-<a href="desktop-5.html" class="prototype-link" style="position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); z-index: 9999; text-decoration: none;">
+<a href="desktop-5.html" class="prototype-link" style="position: absolute; bottom: 5%; z-index: 9999; text-decoration: none;">
     <div class="component-2" style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
         <img src="images/vector-68.svg" style="width: 15px; height: 15px; object-fit: contain;">
         <p style="margin: 0; color: #ffffff !important; font-size: 14px !important; font-family: sans-serif; -webkit-text-stroke: 0px !important; text-shadow: none !important;">next</p>
@@ -31,10 +48,12 @@
         <p style="margin: 0; color: #ffffff !important; font-size: 14px !important; font-family: sans-serif; -webkit-text-stroke: 0px !important; text-shadow: none !important;">home</p>
     </div>
 </a>
+<div class="photo-grid">
 <img src="images/rectangle-10-158.png" class="rectangle-10-158" alt="rectangle-10" />
 <img src="images/rectangle-10-159.png" class="rectangle-10-159" alt="rectangle-10" />
 <img src="images/rectangle-11-160.png" class="rectangle-11-160" alt="rectangle-11" />
 <img src="images/rectangle-12-161.png" class="rectangle-12-161" alt="rectangle-12" />
+</div>
 </div>
 
 </body>

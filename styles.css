@@ -1784,25 +1784,38 @@ visibility: visible !important;
 position: relative !important;
 }
 
-/* ===== A. desktop-5 音频圆盘：310x310 + 绝对定位（导出里这些图标没有任何坐标，以下 left/top 为新建，未改动任何已有坐标） ===== */
-.desktop-5-82 img.exclude-86.audio-btn,
-.desktop-5-82 img.exclude-87.audio-btn,
-.desktop-5-82 img.exclude-88.audio-btn,
-.desktop-5-82 img.exclude-89.audio-btn,
-.desktop-5-82 img.exclude-90.audio-btn,
-.desktop-5-82 img.exclude-91.audio-btn {
+/* ===== A. desktop-5 音频圆盘：右侧两列网格（取代旧的 310px 绝对坐标） =====
+   旧方案把 6 个圆盘以绝对定位钉在信息面板内（left 760/1090、top 40/370/700），
+   右列被画板右缘裁掉、底行被画板底缘裁掉 —— 即"圆盘全挤在一起"的根因。
+   新方案：圆盘收进 .disc-grid 容器，grid 两列三行、间距 20px、整体靠右；
+   左侧文字面板（left:10% / width:540px）保持原样，两者之间留 50px 间距。 */
+.desktop-5-82 .disc-grid {
   position: absolute !important;
-  width: 310px !important;
-  height: 310px !important;
+  right: 5% !important;
+  top: 15% !important;
+  width: 44% !important;          /* 左缘避开文字面板右缘（684px），留 50px 间距 */
+  height: 78% !important;         /* 约束总高：3 行均分 ≈253px/行，底行不溢出画板 */
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: repeat(3, minmax(0, 1fr)) !important; /* minmax(0,1fr)：允许行高低于图片固有高度，否则底行会溢出画板 */
+  gap: 20px !important;
+  z-index: 10 !important;
+}
+/* 圆盘进入网格流：废除旧绝对坐标，格子内居中、保持方形、上限 310px */
+.desktop-5-82 .disc-grid img.audio-btn {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 310px !important;
+  max-height: 310px !important;
+  justify-self: center !important;
+  align-self: center !important;
   object-fit: contain !important;
   z-index: 20 !important;
+  cursor: pointer !important;
 }
-.desktop-5-82 img.exclude-86.audio-btn { left: 760px !important;  top: 40px !important; }
-.desktop-5-82 img.exclude-87.audio-btn { left: 1090px !important; top: 40px !important; }
-.desktop-5-82 img.exclude-88.audio-btn { left: 760px !important;  top: 370px !important; }
-.desktop-5-82 img.exclude-89.audio-btn { left: 1090px !important; top: 370px !important; }
-.desktop-5-82 img.exclude-90.audio-btn { left: 760px !important;  top: 700px !important; }
-.desktop-5-82 img.exclude-91.audio-btn { left: 1090px !important; top: 700px !important; }
 
 /* ===== B. desktop-5 文字强制显示（WELCOME 等，左侧 660px 文本列） ===== */
 .desktop-5-82 p.text-111,
@@ -2268,9 +2281,10 @@ right: 5% !important;   /* 限制在右侧 */
   margin: 0 !important;
   padding: 16px !important;
 }
-/* 包裹后脱离文档流，把下游元素锁回原位（坐标 = 改动前实测值） */
-.desktop-3-16 p.text-35 { position: absolute !important; left: 1px !important;  top: 853px !important; }
-.desktop-3-16 p.text-36 { position: absolute !important; left: 1px !important;  top: 909px !important; }
+/* GitHub / Email 两行联系信息：保持在原设计坐标（top 853/909 为上一轮改动前实测值），
+   横向与左栏卡片文字对齐（卡片 left:10% + 内边距 30px ≈ 174px） */
+.desktop-3-16 p.text-35 { position: absolute !important; left: 174px !important;  top: 853px !important; }
+.desktop-3-16 p.text-36 { position: absolute !important; left: 174px !important;  top: 909px !important; }
 .desktop-3-16 .ic-right-2-37 { position: absolute !important; left: 1px !important; top: 965px !important; }
 
 /* ===== G. 全屏自适应缩放（transform: scale 方案）=====
@@ -2307,4 +2321,209 @@ body {
   flex-shrink: 0 !important;
   overflow: hidden !important;
   background-color: #ffffff !important;
+}
+
+/* ===== H. 半透明底板找回 + 文字层级提升 + 左右两列排版（desktop-3 ~ desktop-7）=====
+   病因：① 第 1992 行 a,p,span,div { background: none !important } 把全部矩形底板的
+            背景色清空了（通用 !important 压过类规则）；
+         ② 导出的矩形 div 都是 0x0 空元素、文字又是纯流式布局，
+            所以"底板丢失、文字全挤在左上角"。
+   对症（对应用户三条规则）：
+   规则1 找回底板：画板内所有 rectangle-* div 恢复半透明深色底 + 30px 圆角（原稿圆角值）+ z-index:1；
+   规则2 层级提升：新增信息卡容器（.info-panel / .info-left）内的 p/span/img
+         一律 relative + z-index:10，浮在底板之上；
+   规则3 左右两列：desktop-3 用 .info-columns（flex row + space-between）把左栏
+         （头像/关于我/个人信息）与右栏（两段文字面板）分开；
+         desktop-4/5/6 用 .info-panel 承载左侧文字列；
+         desktop-7 把 rectangle-8-138 恢复为照片墙背板。 */
+
+/* 规则1：恢复半透明底板（权重 0,2,1 + !important，压过第 1992 行的通用 transparent 规则） */
+[class^="desktop-"] div[class*="rectangle-"] {
+  background-color: rgba(20, 20, 20, 0.6) !important;
+  border-radius: 30px !important;   /* 原稿圆角为 30px */
+  z-index: 1 !important;            /* 垫在背景图之上、文字之下 */
+}
+
+/* 规则2：信息卡内部文字/图标层级（只作用于新容器，不影响全站既有绝对定位） */
+[class^="desktop-"] .info-panel p,
+[class^="desktop-"] .info-panel span,
+[class^="desktop-"] .info-panel img,
+[class^="desktop-"] .info-left p,
+[class^="desktop-"] .info-left span,
+[class^="desktop-"] .info-left img {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* 规则3-a：desktop-3 左右两列总容器（flex 两端对齐，宽度 80%、左边距 10%） */
+.desktop-3-16 .info-columns {
+  position: absolute !important;
+  left: 10% !important;
+  top: 20% !important;
+  width: 80% !important;
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+}
+/* 左栏卡片：头像 + About me + 姓名 + 个人信息，竖排居中 */
+.desktop-3-16 .info-left {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 460px !important;
+  padding: 30px !important;
+  box-sizing: border-box !important;
+}
+.desktop-3-16 .info-left p { line-height: 1.25 !important; }
+/* 左栏底板：铺满整张卡片 */
+.desktop-3-16 .info-left > div[class*="rectangle-"] {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+/* 头像：150px 圆形 */
+.desktop-3-16 .info-left img.ellipse-2-26 {
+  width: 150px !important;
+  height: 150px !important;
+  max-width: 150px !important;
+  max-height: 150px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+/* 右栏：由旧的绝对定位（right:10% / top:500px）改为弹性子项，被 space-between 推到右侧 */
+.desktop-3-16 .info-columns .info-panel {
+  position: relative !important;
+  right: auto !important;
+  top: auto !important;
+  width: 500px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 20px !important;
+}
+
+/* 规则3-b：desktop-4 左侧文字列（My text + 路漫漫其修远兮 + 下载图标） */
+.desktop-4-56 .info-panel {
+  position: absolute !important;
+  left: 10% !important;
+  top: 20% !important;
+  width: 520px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 40px 36px !important;
+  box-sizing: border-box !important;
+}
+.desktop-4-56 .info-panel > div[class*="rectangle-"] {
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important;
+  width: auto !important; height: auto !important;
+}
+/* 下载小图标：44px 居中 */
+.desktop-4-56 .info-panel .download-1-58 {
+  position: relative !important;
+  width: 44px !important;
+  height: 44px !important;
+}
+.desktop-4-56 .info-panel .download-1-58 img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* 规则3-c：desktop-5 左侧文字列（Listen with me + WELCOME + 说明） */
+.desktop-5-82 .info-panel {
+  position: absolute !important;
+  left: 10% !important;
+  top: 20% !important;
+  width: 540px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  padding: 36px 40px !important;
+  box-sizing: border-box !important;
+}
+.desktop-5-82 .info-panel > div[class*="rectangle-"] {
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important;
+  width: auto !important; height: auto !important;
+}
+/* 标题与段落取消旧的 660px 锁定宽 + 40px 左边距，随面板自适应 */
+.desktop-5-82 .info-panel p.text-111,
+.desktop-5-82 .info-panel p.text-112 {
+  width: 100% !important;
+  margin: 0 !important;
+  text-align: left !important;
+}
+
+/* 规则3-d：desktop-6 左侧文字列（Some photos + 说明） */
+.desktop-6-113 .info-panel {
+  position: absolute !important;
+  left: 10% !important;
+  top: 20% !important;
+  width: 520px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  padding: 36px 40px !important;
+  box-sizing: border-box !important;
+}
+.desktop-6-113 .info-panel > div[class*="rectangle-"] {
+  position: absolute !important;
+  left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important;
+  width: auto !important; height: auto !important;
+}
+
+/* 规则3-e：desktop-7 照片墙背板（四张照片之下补回深色底板） */
+.desktop-7-136 .rectangle-8-138 {
+  position: absolute !important;
+  left: 20px !important;
+  top: 220px !important;
+  width: 1400px !important;
+  height: 260px !important;
+}
+
+/* ===== I. desktop-7 四张照片：2x2 田字格网格（取代 D 段旧的 1x4 绝对定位） =====
+   D 段把 4 张照片绝对定位钉成一横排（left 40/390/740/1090、top 240、330x220）。
+   实际 HTML 里这 4 张图本是画板的直接子元素、并无包裹容器，
+   故新建 .photo-grid 容器（与 desktop-5 圆盘网格同一思路）。
+   网格流式布局后，单张照片的旧绝对坐标自然作废——正是"不单独钉坐标"的含义。 */
+.desktop-7-136 .photo-grid {
+  position: absolute !important;
+  left: 20% !important;
+  top: 20% !important;
+  width: 60% !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 20px !important;
+  z-index: 10 !important;
+}
+/* 照片填满格子、不变形、微圆角；权重 (0,2,1) 且位于 D 段之后，压过旧的 330x220 绝对坐标 */
+.desktop-7-136 .photo-grid img {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100% !important;
+  height: auto !important;        /* 保持 3:2 原始比例（源图 600x400），不裁切不变形 */
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  z-index: 10 !important;
+}
+/* 照片墙背板放大，衬在田字格后方（四边留 ~40px 余量；压过 H 段 3-e 的旧尺寸） */
+.desktop-7-136 .rectangle-8-138 {
+  position: absolute !important;
+  left: 17% !important;
+  top: 16.5% !important;
+  width: 66% !important;
+  height: 660px !important;
 }
