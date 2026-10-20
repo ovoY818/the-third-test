@@ -2172,7 +2172,7 @@ html, body {
 .text-4 span {
     position: absolute !important;
     left: 50% !important;
-    top: 75% !important; /* 你可以微调这个数字（比如 60% 或 70%） */
+    top: 85% !important; /* 你可以微调这个数字（比如 60% 或 70%） */
     transform: translate(-50%, -50%) !important; 
     
     color: #ffffff !important; 
