@@ -2658,3 +2658,99 @@ z-index: 10 !important; /* 把它压在文字下面 */
   margin: 0 !important;
   line-height: 1.2 !important;
 }
+
+/* ===== O. desktop-7 照片墙整体放大：背板加大 + 照片网格改按背板百分比自适应 =====
+   需求：rectangle-8-138 适当放大；4 张照片在背板内的相对位置与间距不变、
+   随背板自适应放大；不得与底部 return/next/home 导航（顶边 y=928）重叠。
+   旧布局实测（画板坐标 1440x1024）：背板 245,169 950x660（bottom 829）；
+   网格 288,205 864x583；照片 422x281（3:2），gap 20px。
+   网格相对背板内缩：左右各 43px（4.53%）、上 36px（5.45%）、下 41px（6.2%），基本居中。
+   治法：
+   1) HTML（desktop-7.html）：把 .photo-grid 移入 .rectangle-8-138 内部。
+      背板是 absolute，自此成为网格的包含块——网格的 left/top/width 百分比
+      改为相对背板计算，背板再放大时间距与相对位置自动跟随，无需重算。
+      导航 3 个 <a> 必须留在背板外（画板直子级）：否则 bottom:5%/left:5%
+      的包含块变成背板，导航会错位到背板里去。
+   2) 背板放大：66%x660 → 72%x720（950x660 → 1037x720，约 +9%），
+      left 17%→14%、top 16.5%→14.5%（左右留黑各 201.6px 保持对称）；
+      新底边 868.5，距导航顶边 928 留 59.5px，不重叠。
+   3) 网格按旧相对内缩换算为背板百分比：left 4.5% / top 5.4% / width 91%。
+      新单元格 (1037x0.91-20)/2 ≈ 462 宽、308 高（3:2 不变），
+      照片较旧 422x281 放大约 9.4%；gap 20px 不变；网格底边内缩 ≈6.3%（旧 6.2%）一致。
+   4) 权重：本段 .desktop-7-136 .rectangle-8-138（0,2,1）与 I 段同选择器同权重、
+      位置在后胜出；.rectangle-8-138 .photo-grid（0,3,1）压过 I 段 .photo-grid（0,2,1）。
+      I 段的 display:grid / 2列 / gap / z-index 等一律保留，只覆盖定位三属性。 */
+.desktop-7-136 .rectangle-8-138 {
+  left: 14% !important;
+  top: 14.5% !important;
+  width: 72% !important;
+  height: 720px !important;
+}
+.desktop-7-136 .rectangle-8-138 .photo-grid {
+  position: absolute !important;
+  left: 4.5% !important;
+  top: 5.4% !important;
+  width: 91% !important;
+}
+
+/* ===== P. desktop-2 首页改版：个人信息组居中 + 四个导航文字分列左右 =====
+   需求：① 头像 + 霜秋怀煦 + ovoY + 邮箱 移到画布稍正中间，组内相对位置与大小不变、
+        文字按居中样式排布；② About me + My text 分布到该组左侧；Listen with me +
+        Some photos 分布到右侧；③ 两对各自稍微扩大纵向间距；④ 不改变任何文字大小。
+   旧布局实测（画板坐标 1440x1024）：头像 0,0 300x300；info-block 0,310 329x212
+   （text-9 256x95 / text-10 88x53 / text-11 329x44，行内 text-align:center）；
+   四导航原是右侧竖排：left:975，top 150/330/510/690，盒 300/440/300/400 x 80，
+   对内侧距 About↔My text = 280、Listen↔Some photos = 280。
+   治法：
+   1) 中心组绝对定位到画布正中：组高 = 300+10+212 = 522，
+      top = (1024-522)/2 = 251；头像与 info-block 均 left:50% + translateX(-50%)，
+      两者中心线同钉 x=720（旧布局 info 中心比头像中心偏右 14.5px，
+      此次按"文字按居中排布"归零；尺寸、上下顺序、10px 间隙一律未动）。
+      用 left:50%+translateX(-50%) 而非写死 px：info-block 宽 329 取决于邮箱文字宽，
+      百分比居中不随字体度量漂移。
+   2) 导航按 href 精确重定位（选择器权重 0,3,2，压过 1950 段 nth-of-type 的 0,3,1，
+      盒宽/盒高/字号规则一律不碰，只改定位）：
+      左自由区 0~555.5（中 277.75）：About me / My text（盒宽 300）→ left:127.75；
+      右自由区 884.5~1440（中 1162.25）：Listen with me（盒宽 440）→ left:942.25、
+      Some photos（盒宽 400）→ left:962.25。两列文字中心关于画布中心 720 对称。
+   3) 纵向间距 280→320（+40，稍微扩大）：About me / Listen with me 顶 272，
+      My text / Some photos 顶 672；四盒垂直中线 512 = 中心组中线（251~773 的中值），
+      与中心组视觉平衡；左列右缘 427.75 距中心组左缘 127.75px，
+      右列左缘 942.25 距中心组右缘 57.75px，互不重叠。
+   4) href 跳转（desktop-3/4/5/6）未动；字号 64px 未动。 */
+.desktop-2-6 img.ellipse-1-8 {
+  position: absolute !important;
+  left: 50% !important;
+  top: 251px !important;
+  transform: translateX(-50%) !important;
+}
+.desktop-2-6 .info-block {
+  position: absolute !important;
+  left: 50% !important;
+  top: 561px !important;   /* = 头像顶 251 + 头像高 300 + 间隙 10 */
+  transform: translateX(-50%) !important;
+}
+.desktop-2-6 a.prototype-link[href="desktop-3.html"] {  /* About me → 左列上 */
+  position: absolute !important;
+  left: 127.75px !important;
+  top: 272px !important;
+  bottom: auto !important;
+}
+.desktop-2-6 a.prototype-link[href="desktop-4.html"] {  /* My text → 左列下 */
+  position: absolute !important;
+  left: 127.75px !important;
+  top: 672px !important;
+  bottom: auto !important;
+}
+.desktop-2-6 a.prototype-link[href="desktop-5.html"] {  /* Listen with me → 右列上 */
+  position: absolute !important;
+  left: 942.25px !important;
+  top: 272px !important;
+  bottom: auto !important;
+}
+.desktop-2-6 a.prototype-link[href="desktop-6.html"] {  /* Some photos → 右列下 */
+  position: absolute !important;
+  left: 962.25px !important;
+  top: 672px !important;
+  bottom: auto !important;
+}
