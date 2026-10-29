@@ -2556,3 +2556,105 @@ z-index: 10 !important; /* 把它压在文字下面 */
    选择器与上段（2286/2287 行）同权重 (0,2,1)+!important，位置在后故胜出。 */
 .desktop-3-16 p.text-35 { position: absolute !important; left: 174px !important; top: 803px !important; }
 .desktop-3-16 p.text-36 { position: absolute !important; left: 174px !important; top: 859px !important; }
+
+/* ===== L. desktop-3 个人信息（text-30）居中分行 + 卡片加高防重合 =====
+   病因：text-30 五行（2008/GDUT/能源化学工程/广东汕头/ACG）在 HTML 里靠源码
+   换行分隔，但默认 white-space:normal 把换行折叠成空格 → 挤成一长行，
+   再被 flex-shrink 压到卡片内容宽（400px）随机断行，既没分行也没居中。
+   治法：
+   1) white-space:pre-line —— 源码换行升级为硬分行，5 行各自归位；
+      最长行"能源化学工程"36px 约 216px < 400px 内容宽，不溢出；
+   2) width:100% + text-align:center + flex-shrink:0 —— 每行在卡片内容区
+      水平居中（卡片 align-items:center 已保证 p 整体居中）；
+   3) line-height:1.4（50px/行）—— 5 行共 250px，行间透气；
+   4) 卡片 .info-left 本就无固定高度（flex 内容撑开），文字 2 行→5 行后
+      自动加高（502 → 约 664px）；rectangle-2-21 为 absolute inset:0
+      铺满卡片，自动跟随新高度，无需单独改；
+   5) 防重合：加高后卡片底边将达 887，会压住 text-35（GitHub，顶 803），
+      故 .info-columns 的 top 由 20%（205px）下调至 120px——卡片变为
+      120~784，与 GitHub 顶留 19px 间距；右栏面板随之上移至 120~634，
+      分栏结构、顶端齐平样式不变。 */
+.desktop-3-16 .info-left p.text-30 {
+  white-space: pre-line !important;   /* 源码换行 = 硬分行 */
+  width: 100% !important;             /* 占满卡片内容宽，供 text-align 居中 */
+  text-align: center !important;
+  flex-shrink: 0 !important;          /* 防止被 flex 压窄导致意外断行 */
+  line-height: 1.4 !important;        /* 5 行 × 50px = 250px */
+  margin: 0 !important;
+}
+/* 两栏容器上移 85px，为加高后的左卡让出与 GitHub/Email 的间距 */
+.desktop-3-16 .info-columns {
+  top: 120px !important;
+}
+
+/* ===== M. desktop-3 右栏：text-32 单行 + text-34 源码分行左对齐 =====
+   病因：text-32（48px）单行实测宽 672px，面板内容宽仅 468px → 被迫折两行；
+   text-34 源码 6 行被 white-space:normal 折叠后按容器宽软换行且居中。
+   治法：
+   1) .info-panel 保持 H 段的 flex 子项身份（position:relative），靠
+      width:720px + flex-shrink:0 + margin-left:76px 换出空间：
+      左卡右缘 604 + 76 = 面板左缘 680，与左卡间距 75px（分栏保留）；
+      总宽 460+76+720=1256 超出 .info-columns 容器（1152）104px，
+      溢出方向向右，右缘 1400 仍在画板内，左卡位置分毫不动。
+      注：不能用 absolute+right:40px——.info-columns 自身是 absolute，
+      面板的包含块是它而非画板，right 会相对容器右缘（1296）计算，
+      导致面板左缘 535 与左卡重叠 70px（实测踩坑，已回退该方案）。
+      - 内容宽 688 > 文字 672，text-32 一行放得下；
+      - 面板高度 = 单行组 92 + gap 20 + 六行组 272 ≈ 384（121~505），
+        距 node-55 顶边（772）267px，不重叠。
+   2) text-32：white-space:nowrap 单行保底；面板高度自适应单行文字。
+   3) text-34：white-space:pre-line 恢复源码 6 行硬分行（与图框呈现一致），
+      text-align:left 行内左对齐；最长行 634 ≤ 688 不折断；
+      面板高度由 grid 叠加机制自动撑高至 6 行。
+   左卡、text-35/36、导航、node-55 等一律未动。 */
+.desktop-3-16 .info-columns .info-panel {
+  position: relative !important;
+  right: auto !important;
+  top: auto !important;
+  flex-shrink: 0 !important;      /* 容器放不下也不许被压窄 */
+  width: 720px !important;
+  margin-left: 76px !important;   /* 左卡右缘 604 + 76 = 面板左缘 680 */
+}
+/* 左卡同样禁止被压缩：总宽 1256 超出容器 1152 时，溢出必须向右走，
+   而不是把左卡从 460 压窄（实测踩坑：不加此条左卡被压成 354） */
+.desktop-3-16 .info-left {
+  flex-shrink: 0 !important;
+}
+.desktop-3-16 p.text-32 {
+  white-space: nowrap !important;
+}
+.desktop-3-16 p.text-34 {
+  white-space: pre-line !important;
+  text-align: left !important;
+}
+
+/* ===== N. desktop-6「Yunnan in my eyes」链接回归文字流：移到中文说明文字（text-134）下方 =====
+   病因：C 段全局导航规则 [class^="desktop-"] a.prototype-link（及 :nth-of-type(3) 的
+   left:380px）把本页第 3 个 prototype-link——即跳往 desktop-7.html 的 Yunnan 链接——
+   也当成导航按钮，钉成 absolute + bottom:40px + left:380px + 150x56，
+   链接文字 p.text-135 还被 C 段的 a.prototype-link p 规则压成 18px。
+   于是它出现在画板底部导航行（return/home 右侧），而非中文文字下方。
+   治法：用 .desktop-6-113 a.prototype-link[href="desktop-7.html"]（权重 0,3,2，
+   压过 C 段 nth-of-type(3) 的 0,3,1 + !important）把该链接还原为 flex 流内元素：
+   1) position:relative + 四边 auto：退出绝对定位。注意 bottom/left 必须显式置 auto，
+      否则相对定位会按 bottom:40px 上移 40px、按 left:380px 右移 380px；
+   2) width:max-content + height:auto：解除 150x56 锁定，链接框随文字宽高；
+   3) p.text-135 恢复设计稿 48px Irish Grover + margin:0 + line-height:1.2，
+      压过 C 段 18px/左边距 10px（选择器权重 0,4,2 > 0,2,2）；
+   4) desktop-6 的 HTML 结构本就让该 <a> 排在 text-134 之后，回到纵列流后
+      借 flex gap:10px 自然落到中文文字正下方，HTML 一行未动；
+   5) href="desktop-7.html" 跳转功能、return/home 导航、其他页面一律未动。 */
+.desktop-6-113 a.prototype-link[href="desktop-7.html"] {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  width: max-content !important;
+  height: auto !important;
+}
+.desktop-6-113 a.prototype-link[href="desktop-7.html"] p.text-135 {
+  font-size: 48px !important;   /* 恢复设计稿字号，与「Some photos」标题一致 */
+  margin: 0 !important;
+  line-height: 1.2 !important;
+}
