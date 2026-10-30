@@ -2754,3 +2754,249 @@ z-index: 10 !important; /* 把它压在文字下面 */
   top: 672px !important;
   bottom: auto !important;
 }
+
+/* ===== Q. desktop-5 音频圆盘改版：按设计稿的散点叠放布局重排 =====
+   需求：页面呈现设计稿排版效果（6 张圆盘散点相互叠放，而非整齐网格）；
+   播放功能（img.audio-btn + data-audio，script.js 委托点击）与底部导航一律不动。
+   设计稿实测（用户参考图 1824x1296 = 1440x1024 画板的 1.267 倍截图，
+   按暗孔精修盘心 + 径向亮环扫描量径）：
+   - 盘心（画板坐标）：MAYLA(943,271)、浅粉(820,425)、小提琴(655,396)、
+     秋叶(1146,696)、双人(982,662)、初音(654,761)；盘直径 ≈320（半径实测 158~165）。
+   - 对应文件：exclude-86=MAYLA、87=浅粉、88=小提琴、89=秋叶、90=双人、91=初音。
+   - 叠放次序（前者压后者）：MAYLA>浅粉>小提琴；浅粉>双人；秋叶>双人。
+   - 参考图文字栏为窄列（x 158..378，y 260..740），标题"Listen with me"在画布左上（y≈70）。
+   治法：
+   1) HTML：text-85 标题移出 .info-panel 成为画板直子级（其余结构不动）；
+   2) .disc-grid 退场（position:static + display:block）——6 圆盘改绝对定位后
+      包含块回归画板 .desktop-5-82，坐标即画板坐标；
+   3) 圆盘按实测盘心绝对定位：left/top = 盘心 − 160，统一 320x320
+      （压过 A 段 grid 流的 width:100%/max-width:310px，权重 (0,3,1) 同段竞争后置胜出）；
+   4) 显式 z-index 落实叠放次序：小提琴20 < 双人21 < 浅粉22 < MAYLA23 < 秋叶24 < 初音25
+      （DOM 序 86~91 全为 z20，无法表达该次序，故逐盘指定）；
+   5) 文字栏收窄贴合参考图：panel 宽 540→320、text-111/112 宽 660→240、
+      margin 归零、white-space:pre-line 恢复源码分行、line-height:1.5；
+      panel 垂直居中（top:50% + translateY(-50%)）；
+   6) 标题钉画板左上 left:40px top:40px（参考图位置），z10 压住背景图。
+   约束校验：秋叶右缘 1306<1440；初音底缘 921<导航顶 928（留 7px）；
+   小提琴/初音左缘 494/495 > 面板右缘 464（退 30px）；文字右缘 424 不压盘；
+   audio-btn 类名、data-audio、script.js、导航均未动。 */
+.desktop-5-82 p.text-85 {
+  position: absolute !important;
+  left: 40px !important;
+  top: 40px !important;
+  z-index: 10 !important;
+}
+/* 面板收窄贴合文字栏并垂直居中（left:10% 与深色底、圆角不变） */
+.desktop-5-82 .info-panel {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 320px !important;
+}
+/* 文字栏：窄列 + 源码分行 + 行距 1.5（贴参考图 x158..378 窄列节奏） */
+.desktop-5-82 .info-panel p.text-111,
+.desktop-5-82 .info-panel p.text-112 {
+  width: 240px !important;
+  margin: 0 !important;
+  white-space: pre-line !important;
+  line-height: 1.5 !important;
+}
+/* 圆盘网格容器退场：圆盘全部绝对定位后它空置为零尺寸，不影响布局 */
+.desktop-5-82 .disc-grid {
+  position: static !important;
+  display: block !important;
+}
+/* 6 圆盘：实测盘心绝对定位（left/top = 盘心−160），统一 320x320，逐盘指定叠放层级 */
+.desktop-5-82 .disc-grid img.exclude-88 {  /* 小提琴：最底层 */
+  position: absolute !important;
+  left: 495px !important;
+  top: 236px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 20 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-90 {  /* 双人 */
+  position: absolute !important;
+  left: 822px !important;
+  top: 502px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 21 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-87 {  /* 浅粉 */
+  position: absolute !important;
+  left: 660px !important;
+  top: 265px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 22 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-86 {  /* MAYLA */
+  position: absolute !important;
+  left: 783px !important;
+  top: 111px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 23 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-89 {  /* 秋叶 */
+  position: absolute !important;
+  left: 986px !important;
+  top: 536px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 24 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-91 {  /* 初音：最上层（无叠放，仅防后期遮挡） */
+  position: absolute !important;
+  left: 494px !important;
+  top: 601px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 25 !important;
+}
+
+/* ===== R. desktop-5 圆盘位置修正：Q 段实测数据有误，按精密复测重排 =====
+   病因：Q 段的盘心实测把「MAYLA 与浅粉」的圆心弄反（MAYLA 记成 943,271、
+   浅粉记成 820,425），叠放次序也判反了（记成 MAYLA>浅粉、秋叶>双人），
+   导致页面圆盘位置混乱、与设计稿不一致。
+   复测方法（2026-10-30，参考图 1824x1296 = 画板 1.267 倍）：
+   1) 中心孔检测：6 盘各有一个完整圆形暗孔（面积≈1950~1980 ref px²，
+      孔半径 20~24 画板 px），孔心即盘心（scipy 连通域 + 亮环验证）；
+   2) 定径：径向亮度剖面，6 盘边缘均在 r=155~160 画板 px → 统一 D=320（与页面一致）；
+   3) 身份核对：6 盘逐一裁剪与页面圆盘图像比对确认；
+   4) 叠放次序：重叠区「边缘弧可见性」法（上盘边缘弧可见、梯度大），
+      4 对重叠全部经高倍放大肉眼复核：浅粉>MAYLA、小提琴>浅粉、双人>秋叶、初音>双人；
+   5) 旋转角：模板旋转搜索，6 盘全部 0°（miku 0.864 / MAYLA 0.721 / 小提琴 0.703 高置信）。
+   实测盘心（画板坐标）：MAYLA(1203,378)、浅粉(936,274)、小提琴(649,382)、
+   秋叶(1148,699)、双人(930,647)、初音(648,760)。
+   治法：同选择器后置覆盖 Q 段的 left/top/z-index；left/top = 盘心 − 160。
+   层级：86=20 < 87=21 < 88=22（浅粉压 MAYLA、小提琴压浅粉）；
+         89=23 < 90=24 < 91=25（双人压秋叶、初音压双人）。
+   约束校验：初音底缘 920 < 导航顶 928（留 8px，与参考图一致）；
+   MAYLA 右缘 1363 < 1440；小提琴/初音左缘 489/488 > 面板右缘 464（退 25px）；
+   audio-btn 类名、data-audio、script.js、导航均未动。 */
+.desktop-5-82 .disc-grid img.exclude-86 {  /* MAYLA：右上角，被浅粉压 */
+  position: absolute !important;
+  left: 1043px !important;
+  top: 218px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 20 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-87 {  /* 浅粉：中上，压 MAYLA、被小提琴压 */
+  position: absolute !important;
+  left: 776px !important;
+  top: 114px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 21 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-88 {  /* 小提琴：左侧，压浅粉 */
+  position: absolute !important;
+  left: 489px !important;
+  top: 222px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 22 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-89 {  /* 秋叶：右下，被双人压 */
+  position: absolute !important;
+  left: 988px !important;
+  top: 539px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 23 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-90 {  /* 双人：中下，压秋叶、被初音压 */
+  position: absolute !important;
+  left: 770px !important;
+  top: 487px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 24 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-91 {  /* 初音：左下，压双人 */
+  position: absolute !important;
+  left: 488px !important;
+  top: 600px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 25 !important;
+}
+
+/* ===== S. desktop-5：MAYLA/秋叶盘右移，与左侧圆盘呈少量重叠 =====
+   需求：exclude-86(MAYLA) 与 exclude-89(秋叶) 稍微向右侧调整，分别与左侧图形
+   （87 浅粉 / 90 双人）有少量重叠部分，像其他四个盘两两相依那样；不动其他元素。
+   实测依据（参考图 1824x1296 = 画板 1.267 倍，本轮孔模板匹配复测）：
+   - 另两对盘的"轻叠"量（盘直径 320）：87-88 = 13.4px、90-91 = 16.2px；
+   - 调整前重叠量：86-87 = 33.5px（MAYLA 1203,378）；89-90 = 95.9px
+     （秋叶 1148,699；且该盘心复测值应为 (1175,725)，R 段沿用了一个被
+     叶片暗斑污染的旧检测值 1148,699——暗孔与叶隙粘连致质心左偏）；
+   - 层级不变：87 压 86、90 压 89（左侧盘在上），与 87-88、90-91 两对同构。
+   治法（S 段同选择器后置覆盖 R 段的 left/top）：
+   - 86 MAYLA：盘心 (1203,378) → (1222,378)，右移 19px → 与 87 重叠 15.7px；
+   - 89 秋叶：盘心 (1148,699) → (1223,725)，右移 75px、下移 26px
+     （y 对齐参考图复测值 725）→ 与 90 重叠 16.8px。
+   约束校验：86 右缘 1382 < 1440；89 右缘 1383 < 1440、底缘 885 < 导航顶 928（留 43px）；
+   86-89 圆心距 347 > 320 不互叠；86/89 与其余四盘无新重叠；
+   audio-btn 类名、data-audio、script.js、底部导航均未动。 */
+.desktop-5-82 .disc-grid img.exclude-86 {  /* MAYLA：右上，右移后与浅粉轻叠 15.7px */
+  position: absolute !important;
+  left: 1062px !important;
+  top: 218px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 20 !important;
+}
+.desktop-5-82 .disc-grid img.exclude-89 {  /* 秋叶：右下，右移后与双人轻叠 16.8px */
+  position: absolute !important;
+  left: 1063px !important;
+  top: 565px !important;
+  width: 320px !important;
+  height: 320px !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 23 !important;
+}
+
+/* ===== T. desktop-5：秋叶盘下移，下端与初音盘（exclude-91）齐平 =====
+   需求：exclude-89 再向下侧一些，与 exclude-91 下端齐平；不动其他。
+   实测依据（1600x1024 视口）：
+   - 调整前：秋叶 top=565 底=885 中心 y=725；初音 top=600 底=920 中心 y=760；
+   - 两盘直径同为 320px，"下端齐平" ⇔ top 相同（600）⇔ 中心 y=760；
+   治法（T 段同选择器后置覆盖 S 段的 top，left/尺寸/层级全不动）：
+   - 89 秋叶：top 565 → 600，下移 35px；盘心 (1223,725) → (1223,760)。
+   约束校验：秋叶底缘 920 < 导航顶 928（留 8px，与初音同余量）；右缘 1383 < 1440；
+   与双人(930,647)重叠由 16.8px 减为约 6px（仍相倚，层级 90>89 不变）；
+   与 MAYLA(1222,378)圆心距 382 > 320 不互叠；与初音圆心距 575 > 320 不互叠；
+   audio-btn 类名、data-audio、script.js、底部导航均未动。 */
+.desktop-5-82 .disc-grid img.exclude-89 {
+  position: absolute !important;
+  top: 600px !important;
+}
